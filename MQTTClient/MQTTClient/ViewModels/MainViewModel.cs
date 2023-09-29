@@ -32,6 +32,10 @@ namespace MQTTClient.ViewModels
             _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
             _mqttClient.DisconnectedAsync += MqttClient_DisconnectedAsync;
             _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
+
+            // Connect to broker
+            await _mqttClient.ConnectAsync(options);
+            await _mqttClient.SubscribeAsync(new MqttClientSubscribeOptionsBuilder().WithTopicFilter($"chatChannel/{_currentUser}").Build());
         }
 
         private Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
