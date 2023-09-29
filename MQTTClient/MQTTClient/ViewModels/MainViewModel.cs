@@ -25,8 +25,30 @@ namespace MQTTClient.ViewModels
 
             var options = new MqttClientOptionsBuilder()
                                     .WithClientId(_currentUser)
-                                    .WithTcpServer("YOUR IP", 1884)
+                                    .WithTcpServer("YOUT IP", 1884)
                                     .Build();
+
+            // Set up handlers
+            _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
+            _mqttClient.DisconnectedAsync += MqttClient_DisconnectedAsync;
+            _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
+        }
+
+        private Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task MqttClient_DisconnectedAsync(MqttClientDisconnectedEventArgs arg)
+        {
+            Console.WriteLine("DISCONNECTED");
+            return Task.CompletedTask;
+        }
+
+        private Task MqttClient_ConnectedAsync(MqttClientConnectedEventArgs arg)
+        {
+            Console.WriteLine("CONNECTED");
+            return Task.CompletedTask;
         }
     }
 }
