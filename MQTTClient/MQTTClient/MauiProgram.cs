@@ -20,6 +20,8 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        builder.Services.AddTransient<MainViewModel>();
+
         return builder.Build();
     }
 }
