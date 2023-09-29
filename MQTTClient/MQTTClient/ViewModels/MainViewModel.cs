@@ -14,6 +14,26 @@ namespace MQTTClient.ViewModels
         string _currentUser = "user1";
         string _chatPartner = "user2";
 
+        [ObservableProperty]
+        string _chatHistory;
+
+        [ObservableProperty]
+        string _message;
+
+        [RelayCommand]
+        async void Send()
+        {
+            var applicationMessage = new MqttApplicationMessageBuilder()
+                .WithTopic($"chatChannel/{_chatPartner}")
+                .WithPayload(Message)
+                .Build();
+
+            await _mqttClient.PublishAsync(applicationMessage);
+
+            ChatHistory += $"You: \n{Message}\n";
+            Message = string.Empty;
+        }
+
         public MainViewModel()
         {
         }
@@ -40,6 +60,7 @@ namespace MQTTClient.ViewModels
 
         private Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
         {
+            ChatHistory += $"{arg.ClientId}: \n{Encoding.UTF8.GetString(arg.ApplicationMessage.Payload)}\n";
             return Task.CompletedTask;
         }
 
