@@ -5,6 +5,8 @@ using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Text;
+using MQTTClient.Models;
+using System.Collections.ObjectModel;
 
 namespace MQTTClient.ViewModels
 {
@@ -15,7 +17,7 @@ namespace MQTTClient.ViewModels
         string _chatPartner = "user2";
 
         [ObservableProperty]
-        string _chatHistory;
+        ObservableCollection<MessageModel> _messages;
 
         [ObservableProperty]
         string _message;
@@ -30,12 +32,13 @@ namespace MQTTClient.ViewModels
 
             await _mqttClient.PublishAsync(applicationMessage);
 
-            ChatHistory += $"You: \n{Message}\n";
+            Messages.Add(new MessageModel() { Text = $"You: \n{Message}", MessageType = MessageType.OutGoingMessage });
             Message = string.Empty;
         }
 
         public MainViewModel()
         {
+            Messages = new ObservableCollection<MessageModel>();
         }
 
         public async Task CreateClient()
@@ -60,7 +63,7 @@ namespace MQTTClient.ViewModels
 
         private Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
         {
-            ChatHistory += $"{arg.ClientId}: \n{Encoding.UTF8.GetString(arg.ApplicationMessage.Payload)}\n";
+            Messages.Add(new MessageModel() { Text = $"{arg.ClientId}: \n{Encoding.UTF8.GetString(arg.ApplicationMessage.Payload)}", MessageType = MessageType.IncomingMessage });
             return Task.CompletedTask;
         }
 
